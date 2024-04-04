@@ -14,10 +14,6 @@ st.set_page_config(
     page_icon="📃",
 )
 
-from dotenv import load_dotenv
-import os
-load_dotenv()
-
 
 class ChatCallbackHandler(BaseCallbackHandler):
     message = ""
@@ -107,6 +103,10 @@ Upload your files on the sidebar.
 """
 )
 
+# from dotenv import load_dotenv
+# import os
+# load_dotenv()
+
 with st.sidebar:
     file = st.file_uploader(
         "Upload a .txt .pdf or .docx file",
@@ -114,7 +114,7 @@ with st.sidebar:
     )
 
     api_key = st.text_input("OpenAI API Key")
-    os.environ["OPENAI_API_KEY"] = api_key
+    # os.environ["OPENAI_API_KEY"] = api_key
 
 # with st.sidebar:
 #     openai_api_key = st.text_input("OpenAI API Key")
