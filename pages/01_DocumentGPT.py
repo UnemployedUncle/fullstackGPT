@@ -33,14 +33,6 @@ class ChatCallbackHandler(BaseCallbackHandler):
         self.message_box.markdown(self.message)
 
 
-llm = ChatOpenAI(
-    temperature=0.1,
-    streaming=True,
-    callbacks=[
-        ChatCallbackHandler(),
-    ],
-    api_key = openai_api_key
-)
 
 
 @st.cache_data(show_spinner="Embedding file...")
@@ -121,9 +113,22 @@ with st.sidebar:
         type=["pdf", "txt", "docx"],
     )
 
-with st.sidebar:
-    openai_api_key = st.text_input("OpenAI API Key")
-    os.environ["OPENAI_API_KEY"] = openai_api_key
+    api_key = st.text_input("OpenAI API Key")
+    os.environ["OPENAI_API_KEY"] = api_key
+
+# with st.sidebar:
+#     openai_api_key = st.text_input("OpenAI API Key")
+#     os.environ["OPENAI_API_KEY"] = openai_api_key
+
+llm = ChatOpenAI(
+    temperature=0.1,
+    streaming=True,
+    callbacks=[
+        ChatCallbackHandler(),
+    ],
+    api_key = api_key
+)
+
 
 if file:
     retriever = embed_file(file)
