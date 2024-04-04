@@ -13,6 +13,8 @@ st.set_page_config(
     page_icon="📃",
 )
 
+api_key = st.text_input("OpenAI API Key")
+OPENAI_API_KEY={api_key}
 llm = ChatOpenAI(temperature=0.1)
 
 @st.cache_data(show_spinner="Embedding file...")
