@@ -31,6 +31,7 @@ class ChatCallbackHandler(BaseCallbackHandler):
 
 
 
+
 @st.cache_data(show_spinner="Embedding file...")
 def embed_file(file):
     file_content = file.read()
@@ -103,10 +104,6 @@ Upload your files on the sidebar.
 """
 )
 
-# from dotenv import load_dotenv
-# import os
-# load_dotenv()
-
 with st.sidebar:
     file = st.file_uploader(
         "Upload a .txt .pdf or .docx file",
@@ -114,11 +111,6 @@ with st.sidebar:
     )
 
     api_key = st.text_input("OpenAI API Key")
-    # os.environ["OPENAI_API_KEY"] = api_key
-
-# with st.sidebar:
-#     openai_api_key = st.text_input("OpenAI API Key")
-#     os.environ["OPENAI_API_KEY"] = openai_api_key
 
 llm = ChatOpenAI(
     temperature=0.1,
@@ -128,7 +120,6 @@ llm = ChatOpenAI(
     ],
     api_key = api_key
 )
-
 
 if file:
     retriever = embed_file(file)
