@@ -18,10 +18,9 @@ from dotenv import load_dotenv
 import os
 
 load_dotenv()
-openai_api_key = os.environ.get("OPENAI_API_KEY")
-
-# api_key = st.text_input("OpenAI API Key")
-# OPENAI_API_KEY={api_key}
+# openai_api_key = os.environ.get("OPENAI_API_KEY")
+openai_api_key = st.text_input("OpenAI API Key")
+os.environ["OPENAI_API_KEY"] = openai_api_key
 llm = ChatOpenAI(temperature=0.1, api_key = openai_api_key)
 
 @st.cache_data(show_spinner="Embedding file...")
