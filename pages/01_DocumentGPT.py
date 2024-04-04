@@ -17,13 +17,7 @@ st.set_page_config(
 from dotenv import load_dotenv
 import os
 load_dotenv()
-with st.sidebar:
-    file = st.file_uploader(
-        "Upload a .txt .pdf or .docx file",
-        type=["pdf", "txt", "docx"],
-    )
-    openai_api_key = st.text_input("OpenAI API Key")
-    os.environ["OPENAI_API_KEY"] = openai_api_key
+
 
 class ChatCallbackHandler(BaseCallbackHandler):
     message = ""
@@ -121,6 +115,13 @@ Upload your files on the sidebar.
 """
 )
 
+with st.sidebar:
+    file = st.file_uploader(
+        "Upload a .txt .pdf or .docx file",
+        type=["pdf", "txt", "docx"],
+    )
+    openai_api_key = st.text_input("OpenAI API Key")
+    os.environ["OPENAI_API_KEY"] = openai_api_key
 
 if file:
     retriever = embed_file(file)
