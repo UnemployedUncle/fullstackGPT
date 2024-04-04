@@ -120,6 +120,8 @@ with st.sidebar:
         "Upload a .txt .pdf or .docx file",
         type=["pdf", "txt", "docx"],
     )
+
+with st.sidebar:
     openai_api_key = st.text_input("OpenAI API Key")
     os.environ["OPENAI_API_KEY"] = openai_api_key
 
