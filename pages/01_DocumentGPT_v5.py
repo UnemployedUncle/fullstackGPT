@@ -14,17 +14,27 @@ st.set_page_config(
     page_icon="📃",
 )
 
+# on_llm_start(1, 2, 3, 4) # arguements
+# on_llm_start(a=1, b=2) # keyword arguments
 
 class ChatCallbackHandler(BaseCallbackHandler):
     message = ""
+    # message_box = st.empty()
 
     def on_llm_start(self, *args, **kwargs):
+        # with st.sidebar:
+        #     st.write("llm started")
         self.message_box = st.empty()
 
     def on_llm_end(self, *args, **kwargs):
+        # with st.sidebar:
+        #     st.write("llm ended") # empty box
+        # st.sidebar.write("llm ended")
         save_message(self.message, "ai")
 
     def on_llm_new_token(self, token, *args, **kwargs):
+        # print(token) # token을 각각 출력
+        # self.message = f"{self.message} {token}"
         self.message += token
         self.message_box.markdown(self.message)
 
@@ -33,7 +43,7 @@ llm = ChatOpenAI(
     temperature=0.1,
     streaming=True,
     callbacks=[
-        ChatCallbackHandler(),
+        ChatCallbackHandler(), # initialize callback class
     ],
 )
 
@@ -131,8 +141,9 @@ if file:
             | prompt
             | llm
         )
+        # ai가 하는 것처럼 표현
         with st.chat_message("ai"):
-            chain.invoke(message)
+            response = chain.invoke(message)
 
 
 else:
