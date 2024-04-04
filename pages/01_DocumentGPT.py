@@ -111,8 +111,7 @@ with st.sidebar:
     )
 
     api_key = st.text_input("OpenAI API Key")
-    # os.environ["OPENAI_API_KEY"] = api_key
-
+\
 # from dotenv import load_dotenv
 # import os
 # load_dotenv()
@@ -126,7 +125,7 @@ llm = ChatOpenAI(
     callbacks=[
         ChatCallbackHandler(),
     ],
-    api_key = api_key
+    api_key = api_key,
 )
 
 if file:
