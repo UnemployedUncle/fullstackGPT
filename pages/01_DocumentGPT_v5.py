@@ -38,6 +38,14 @@ class ChatCallbackHandler(BaseCallbackHandler):
         self.message += token
         self.message_box.markdown(self.message)
 
+# !pip install python-dotenv
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+# openai_api_key = os.environ.get("OPENAI_API_KEY")
+openai_api_key = st.text_input("OpenAI API Key")
+os.environ["OPENAI_API_KEY"] = openai_api_key
 
 llm = ChatOpenAI(
     temperature=0.1,

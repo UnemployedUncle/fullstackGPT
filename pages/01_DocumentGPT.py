@@ -14,6 +14,13 @@ st.set_page_config(
     page_icon="📃",
 )
 
+from dotenv import load_dotenv
+import os
+load_dotenv()
+with st.sidebar:
+    openai_api_key = st.text_input("OpenAI API Key")
+os.environ["OPENAI_API_KEY"] = openai_api_key
+
 
 class ChatCallbackHandler(BaseCallbackHandler):
     message = ""
@@ -29,7 +36,14 @@ class ChatCallbackHandler(BaseCallbackHandler):
         self.message_box.markdown(self.message)
 
 
-
+llm = ChatOpenAI(
+    temperature=0.1,
+    streaming=True,
+    callbacks=[
+        ChatCallbackHandler(),
+    ],
+    api_key = openai_api_key
+)
 
 
 @st.cache_data(show_spinner="Embedding file...")
@@ -109,24 +123,6 @@ with st.sidebar:
         "Upload a .txt .pdf or .docx file",
         type=["pdf", "txt", "docx"],
     )
-
-    api_key = st.text_input("OpenAI API Key")
-\
-# from dotenv import load_dotenv
-# import os
-# load_dotenv()
-# # openai_api_key = os.environ.get("OPENAI_API_KEY")
-# openai_api_key = st.text_input("OpenAI API Key")
-# os.environ["OPENAI_API_KEY"] = openai_api_key
-
-llm = ChatOpenAI(
-    temperature=0.1,
-    streaming=True,
-    callbacks=[
-        ChatCallbackHandler(),
-    ],
-    api_key = api_key,
-)
 
 if file:
     retriever = embed_file(file)
