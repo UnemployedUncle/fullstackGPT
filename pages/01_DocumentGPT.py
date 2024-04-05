@@ -9,6 +9,11 @@ from langchain.chat_models import ChatOpenAI
 from langchain.callbacks.base import BaseCallbackHandler
 import streamlit as st
 
+from dotenv import load_dotenv
+import os
+load_dotenv()
+# openai_api_key = st.text_input("Env OpenAI API Key")
+
 st.set_page_config(
     page_title="DocumentGPT",
     page_icon="📃",
@@ -33,6 +38,9 @@ class ChatCallbackHandler(BaseCallbackHandler):
 def embed_file(file):
     file_content = file.read()
     file_path = f"./.cache/files/{file.name}"
+
+    os.makedirs("./.cache/files")
+
     with open(file_path, "wb") as f:
         f.write(file_content)
     cache_dir = LocalFileStore(f"./.cache/embeddings/{file.name}")
@@ -107,7 +115,8 @@ with st.sidebar:
         type=["pdf", "txt", "docx"],
     )
 
-    api_key = st.text_input("OpenAI API Key")
+    open_api_key = st.text_input("OpenAI API Key")
+    os.environ["OPENAI_API_KEY"] = openai_api_key
 
 llm = ChatOpenAI(
     temperature=0.1,
@@ -115,7 +124,7 @@ llm = ChatOpenAI(
     callbacks=[
         ChatCallbackHandler(),
     ],
-    api_key = api_key
+    # open_api_key = open_api_key
 )
 
 if file:
