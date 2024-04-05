@@ -115,7 +115,7 @@ with st.sidebar:
         type=["pdf", "txt", "docx"],
     )
 
-    open_api_key = st.text_input("OpenAI API Key")
+    openai_api_key = st.text_input("OpenAI API Key")
     os.environ["OPENAI_API_KEY"] = openai_api_key
 
 llm = ChatOpenAI(
@@ -124,7 +124,7 @@ llm = ChatOpenAI(
     callbacks=[
         ChatCallbackHandler(),
     ],
-    # open_api_key = open_api_key
+    # openai_api_key = openai_api_key
 )
 
 if file:
