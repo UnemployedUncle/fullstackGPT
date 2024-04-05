@@ -29,9 +29,6 @@ class ChatCallbackHandler(BaseCallbackHandler):
         self.message_box.markdown(self.message)
 
 
-
-
-
 @st.cache_data(show_spinner="Embedding file...")
 def embed_file(file):
     file_content = file.read()
