@@ -358,7 +358,9 @@ if not docs:
     )
 else:
     response = run_quiz_chain(level, docs, topic if topic else file.name)
-    st.write(json.loads(response))
+    # st.write(json.loads(response))
+    st.write(response.type)
+    st.write(response)
     # response = run_quiz_chain(level, docs, topic if topic else file.name)
     # with st.form("questions_form"):
     #     for question in response["questions"]:
@@ -373,4 +375,3 @@ else:
     #         elif value is not None:
     #             st.error("Wrong!")
         # button = st.form_submit_button("Submit Answers")
-    # st.write(response)
