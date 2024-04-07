@@ -56,6 +56,20 @@ def wiki_search(term):
 
 with st.sidebar:
     openai_api_key = st.text_input("OpenAI API Key")
+
+    level = None
+    choice = st.selectbox(
+        "Choose the level of the quiz.",
+        (
+            "Hard",
+            "Easy",
+        ),
+    )
+    if choice == "Hard":
+        level = "hard"
+    else:
+        level = "easy"
+
     docs = None
     topic = None
     choice = st.selectbox(
@@ -114,6 +128,21 @@ function = {
         "required": ["questions"],
     },
 }
+
+question_llm = ChatOpenAI(
+    temperature=0.1,
+    model="gpt-3.5-turbo-1106",
+    streaming=True,
+    callbacks=[StreamingStdOutCallbackHandler()],
+    openai_api_key = openai_api_key
+).bind(
+    function_call={
+        "name": "create_quiz",
+    },
+    functions=[
+        function,
+    ],
+)
 
 llm = ChatOpenAI(
     temperature=0.1,
@@ -178,25 +207,7 @@ questions_prompt = ChatPromptTemplate.from_messages(
             """
     You are a helpful assistant that is role playing as a teacher.
          
-    Based ONLY on the following context make 10 (TEN) questions to test the user's knowledge about the text.
-    
-    Each question should have 4 answers, three of them must be incorrect and one should be correct.
-         
-    Use (o) to signal the correct answer.
-         
-    Question examples:
-         
-    Question: What is the color of the ocean?
-    Answers: Red|Yellow|Green|Blue(o)
-         
-    Question: What is the capital or Georgia?
-    Answers: Baku|Tbilisi(o)|Manila|Beirut
-         
-    Question: When was Avatar released?
-    Answers: 2007|2001|2009(o)|1998
-         
-    Question: Who was Julius Caesar?
-    Answers: A Roman Emperor(o)|Painter|Actor|Model
+    Based ONLY on the following context make 10 (TEN) {level} questions to test the user's knowledge about the text.
          
     Your turn!
          
@@ -206,7 +217,7 @@ questions_prompt = ChatPromptTemplate.from_messages(
     ]
 )
 
-questions_chain = {"context": format_docs} | questions_prompt | llm
+questions_chain = {"context": format_docs, "level": level} | questions_prompt | question_llm
 
 # prompt = PromptTemplate.from_template("Make a quiz about {city}")
 # questions_chain = prompt | llm
