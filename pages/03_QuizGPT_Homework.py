@@ -84,7 +84,7 @@ with st.sidebar:
         if topic:
             docs = wiki_search(topic)
 
-@st.cache_data(show_spinner="Making {level} quiz...")
+@st.cache_data(show_spinner="Making quiz...")
 def run_quiz_chain(level, _docs, topic):
     # chain = {"context": questions_chain} | formatting_chain | output_parser
     chain = questions_prompt | question_llm
