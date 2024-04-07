@@ -10,12 +10,12 @@ from langchain.retrievers import WikipediaRetriever
 from langchain.schema import BaseOutputParser, output_parser
 
 
-class JsonOutputParser(BaseOutputParser):
-    def parse(self, text):
-        text = text.replace("```", "").replace("json", "")
-        return json.loads(text)
+# class JsonOutputParser(BaseOutputParser):
+#     def parse(self, text):
+#         text = text.replace("```", "").replace("json", "")
+#         return json.loads(text)
 
-output_parser = JsonOutputParser()
+# output_parser = JsonOutputParser()
 
 st.set_page_config(
     page_title="QuizGPT",
@@ -358,7 +358,8 @@ if not docs:
     )
 else:
     response = run_quiz_chain(level, docs, topic if topic else file.name)
-    st.write(response)
+    st.write(response['additional_kwargs']['function_call']['arguments'])
+    st.write(response['additional_kwargs']['function_call']['arguments']['questions'])
     # response = run_quiz_chain(level, docs, topic if topic else file.name)
     # with st.form("questions_form"):
     #     for question in response["questions"]:
@@ -372,4 +373,5 @@ else:
     #             st.success("Correct!")
     #         elif value is not None:
     #             st.error("Wrong!")
-    #     button = st.form_submit_button("Submit Answers")
+        # button = st.form_submit_button("Submit Answers")
+    st.write(response)
