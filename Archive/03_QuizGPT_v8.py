@@ -278,4 +278,4 @@ else:
                 st.success("Correct!")
             elif value is not None:
                 st.error("Wrong!")
-        button = st.form_submit_button()
+        button = st.form_submit_button('Submit Answers')

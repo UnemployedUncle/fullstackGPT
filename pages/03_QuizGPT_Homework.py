@@ -2,7 +2,8 @@ import json
 from langchain.document_loaders import UnstructuredFileLoader
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.chat_models import ChatOpenAI
-from langchain.prompts import ChatPromptTemplate
+# from langchain.prompts import ChatPromptTemplate
+from langchain.prompts import ChatPromptTemplate, PromptTemplate
 from langchain.callbacks import StreamingStdOutCallbackHandler
 import streamlit as st
 from langchain.retrievers import WikipediaRetriever
@@ -42,9 +43,10 @@ def split_file(file):
 
 @st.cache_data(show_spinner="Making quiz...")
 def run_quiz_chain(_docs, topic):
+    # chain = {"context": questions_chain} | formatting_chain | output_parser
     chain = {"context": questions_chain} | formatting_chain | output_parser
     return chain.invoke(_docs)
-
+# .additional_kwargs["function_call"]["arguments"]
 
 @st.cache_data(show_spinner="Searching Wikipedia...")
 def wiki_search(term):
@@ -75,17 +77,99 @@ with st.sidebar:
         if topic:
             docs = wiki_search(topic)
 
+function = {
+    "name": "create_quiz",
+    "description": "function that takes a list of questions and answers and returns a quiz",
+    "parameters": {
+        "type": "object",
+        "properties": {
+            "questions": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "question": {
+                            "type": "string",
+                        },
+                        "answers": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "answer": {
+                                        "type": "string",
+                                    },
+                                    "correct": {
+                                        "type": "boolean",
+                                    },
+                                },
+                                "required": ["answer", "correct"],
+                            },
+                        },
+                    },
+                    "required": ["question", "answers"],
+                },
+            }
+        },
+        "required": ["questions"],
+    },
+}
+
 llm = ChatOpenAI(
     temperature=0.1,
     model="gpt-3.5-turbo-1106",
     streaming=True,
     callbacks=[StreamingStdOutCallbackHandler()],
     openai_api_key = openai_api_key
+).bind(
+    function_call={
+        "name": "create_quiz",
+    },
+    functions=[
+        function,
+    ],
 )
 
 def format_docs(docs):
     return "\n\n".join(document.page_content for document in docs)
 
+#%%
+
+# def get_weather(lon, lat):
+#     print("Call an api...")
+
+# schema = {
+#     "name": "get_weather",
+#     "description": "function that takes a longitude and latitude to find the weather of a place",
+#     "parameters": {
+#         "type": "object",
+#         "properties": {
+#             "lon": {"type": "string", "description": "longitude of the place"},
+#             "lat": {"type": "string", "description": "latitude of the place"},
+#         },
+#     }
+#     "required": ["lon", "lat"],
+# }
+
+# llm = ChatOpenAI(
+#     temperature=0.1,
+# ).bind(
+#     function_call={
+#         "name": "create_quiz",
+#     },
+#     functions=[
+#         function,
+#     ],
+# )
+
+# prompt = PromptTemplate.from_template("Make a quiz about {city}")
+# chain = prompt | llm
+# response = chain.invoke({"city": "rome"})
+# response = response.additional_kwargs["function_call"]["arguments"]
+# response
+
+
+#%%
 
 questions_prompt = ChatPromptTemplate.from_messages(
     [
@@ -123,6 +207,12 @@ questions_prompt = ChatPromptTemplate.from_messages(
 )
 
 questions_chain = {"context": format_docs} | questions_prompt | llm
+
+# prompt = PromptTemplate.from_template("Make a quiz about {city}")
+# questions_chain = prompt | llm
+# response = chain.invoke({"city": "rome"})
+# response = response.additional_kwargs["function_call"]["arguments"]
+# response
 
 formatting_prompt = ChatPromptTemplate.from_messages(
     [
