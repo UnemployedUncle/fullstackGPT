@@ -56,6 +56,7 @@ def wiki_search(term):
 with st.sidebar:
     openai_api_key = st.text_input("OpenAI API Key")
 
+with st.sidebar:
     level = None
     choice = st.selectbox(
         "Choose the level of the quiz.",
@@ -69,6 +70,7 @@ with st.sidebar:
     else:
         level = "easy"
 
+with st.sidebar:
     docs = None
     topic = None
     choice = st.selectbox(
