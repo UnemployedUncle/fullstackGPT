@@ -39,14 +39,6 @@ def split_file(file):
     docs = loader.load_and_split(text_splitter=splitter)
     return docs
 
-
-@st.cache_data(show_spinner="Making {level} quiz...")
-def run_quiz_chain(_docs, topic):
-    # chain = {"context": questions_chain} | formatting_chain | output_parser
-    chain = {"context": format_docs, "level": level} | questions_prompt | question_llm
-    return chain.invoke(_docs)
-# .additional_kwargs["function_call"]["arguments"]
-
 @st.cache_data(show_spinner="Searching Wikipedia...")
 def wiki_search(term):
     retriever = WikipediaRetriever(top_k_results=5)
@@ -91,6 +83,13 @@ with st.sidebar:
         topic = st.text_input("Search Wikipedia...")
         if topic:
             docs = wiki_search(topic)
+
+@st.cache_data(show_spinner="Making {level} quiz...")
+def run_quiz_chain(level, _docs, topic):
+    # chain = {"context": questions_chain} | formatting_chain | output_parser
+    chain = {"context": format_docs} | questions_prompt | question_llm
+    return chain.invoke(_docs, level)
+# .additional_kwargs["function_call"]["arguments"]
 
 function = {
     "name": "create_quiz",
@@ -211,7 +210,7 @@ questions_prompt = ChatPromptTemplate.from_messages(
     ]
 )
 
-questions_chain = {"context": format_docs, "level": level} | questions_prompt | question_llm
+# questions_chain = {"context": format_docs, "level": level} | questions_prompt | question_llm
 
 # prompt = PromptTemplate.from_template("Make a quiz about {city}")
 # questions_chain = prompt | llm
