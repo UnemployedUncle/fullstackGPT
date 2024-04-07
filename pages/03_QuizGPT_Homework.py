@@ -172,20 +172,18 @@ else:
     # st.write(response.additional_kwargs) # AIMessageChunk
     # st.write(response.additional_kwargs["function_call"]["arguments"])
     response = response.additional_kwargs["function_call"]["arguments"]
-    for question in json.loads(response)["questions"]:
-        st.write(question)
-    # response = json.laod(response.additional_kwargs["function_call"]["arguments"])
-    # response = run_quiz_chain(level, docs, topic if topic else file.name)
-    # with st.form("questions_form"):
-    #     for question in response["questions"]:
-    #         st.write(question["question"])
-    #         value = st.radio(
-    #             "Select an option.",
-    #             [answer["answer"] for answer in question["answers"]],
-    #             index=None,
-    #         )
-    #         if {"answer": value, "correct": True} in question["answers"]:
-    #             st.success("Correct!")
-    #         elif value is not None:
-    #             st.error("Wrong!")
-    #     button = st.form_submit_button("Submit Answers")
+    # for question in json.loads(response)["questions"]:
+        # st.write(question)
+    with st.form("questions_form"):
+        for question in json.loads(response)["questions"]:
+            st.write(question["question"])
+            value = st.radio(
+                "Select an option.",
+                [answer["answer"] for answer in question["answers"]],
+                index=None,
+            )
+            if {"answer": value, "correct": True} in question["answers"]:
+                st.success("Correct!")
+            elif value is not None:
+                st.error("Wrong!")
+        button = st.form_submit_button("Submit Answers")
