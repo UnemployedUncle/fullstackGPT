@@ -24,14 +24,6 @@ st.set_page_config(
 
 st.title("QuizGPT")
 
-llm = ChatOpenAI(
-    temperature=0.1,
-    model="gpt-3.5-turbo-1106",
-    streaming=True,
-    callbacks=[StreamingStdOutCallbackHandler()],
-)
-
-
 def format_docs(docs):
     return "\n\n".join(document.page_content for document in docs)
 
@@ -231,6 +223,8 @@ def wiki_search(term):
 
 
 with st.sidebar:
+    openai_api_key = st.text_input("OpenAI API Key")
+
     docs = None
     topic = None
     choice = st.selectbox(
@@ -252,6 +246,13 @@ with st.sidebar:
         if topic:
             docs = wiki_search(topic)
 
+llm = ChatOpenAI(
+    temperature=0.1,
+    model="gpt-3.5-turbo-1106",
+    streaming=True,
+    callbacks=[StreamingStdOutCallbackHandler()],
+    openai_api_key = openai_api_key
+)
 
 if not docs:
     st.markdown(
