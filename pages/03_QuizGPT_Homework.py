@@ -173,7 +173,7 @@ else:
     # st.write(response.additional_kwargs["function_call"]["arguments"])
     response = response.additional_kwargs["function_call"]["arguments"]
     for question in json.loads(response)["questions"]:
-        print(question)
+        st.write(question)
     # response = json.laod(response.additional_kwargs["function_call"]["arguments"])
     # response = run_quiz_chain(level, docs, topic if topic else file.name)
     # with st.form("questions_form"):
