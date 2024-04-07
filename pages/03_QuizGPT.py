@@ -24,6 +24,65 @@ st.set_page_config(
 
 st.title("QuizGPT")
 
+@st.cache_data(show_spinner="Loading file...")
+def split_file(file):
+    file_content = file.read()
+    file_path = f"./.cache/quiz_files/{file.name}"
+    with open(file_path, "wb") as f:
+        f.write(file_content)
+    splitter = CharacterTextSplitter.from_tiktoken_encoder(
+        separator="\n",
+        chunk_size=600,
+        chunk_overlap=100,
+    )
+    loader = UnstructuredFileLoader(file_path)
+    docs = loader.load_and_split(text_splitter=splitter)
+    return docs
+
+
+@st.cache_data(show_spinner="Making quiz...")
+def run_quiz_chain(_docs, topic):
+    chain = {"context": questions_chain} | formatting_chain | output_parser
+    return chain.invoke(_docs)
+
+
+@st.cache_data(show_spinner="Searching Wikipedia...")
+def wiki_search(term):
+    retriever = WikipediaRetriever(top_k_results=5)
+    docs = retriever.get_relevant_documents(term)
+    return docs
+
+with st.sidebar:
+    openai_api_key = st.text_input("OpenAI API Key")
+    docs = None
+    topic = None
+    choice = st.selectbox(
+        "Choose what you want to use.",
+        (
+            "File",
+            "Wikipedia Article",
+        ),
+    )
+    if choice == "File":
+        file = st.file_uploader(
+            "Upload a .docx , .txt or .pdf file",
+            type=["pdf", "txt", "docx"],
+        )
+        if file:
+            docs = split_file(file)
+    else:
+        topic = st.text_input("Search Wikipedia...")
+        if topic:
+            docs = wiki_search(topic)
+
+llm = ChatOpenAI(
+    temperature=0.1,
+    model="gpt-3.5-turbo-1106",
+    streaming=True,
+    callbacks=[StreamingStdOutCallbackHandler()],
+    openai_api_key = openai_api_key
+)
+
 def format_docs(docs):
     return "\n\n".join(document.page_content for document in docs)
 
@@ -192,67 +251,6 @@ formatting_prompt = ChatPromptTemplate.from_messages(
 
 formatting_chain = formatting_prompt | llm
 
-
-@st.cache_data(show_spinner="Loading file...")
-def split_file(file):
-    file_content = file.read()
-    file_path = f"./.cache/quiz_files/{file.name}"
-    with open(file_path, "wb") as f:
-        f.write(file_content)
-    splitter = CharacterTextSplitter.from_tiktoken_encoder(
-        separator="\n",
-        chunk_size=600,
-        chunk_overlap=100,
-    )
-    loader = UnstructuredFileLoader(file_path)
-    docs = loader.load_and_split(text_splitter=splitter)
-    return docs
-
-
-@st.cache_data(show_spinner="Making quiz...")
-def run_quiz_chain(_docs, topic):
-    chain = {"context": questions_chain} | formatting_chain | output_parser
-    return chain.invoke(_docs)
-
-
-@st.cache_data(show_spinner="Searching Wikipedia...")
-def wiki_search(term):
-    retriever = WikipediaRetriever(top_k_results=5)
-    docs = retriever.get_relevant_documents(term)
-    return docs
-
-
-with st.sidebar:
-    openai_api_key = st.text_input("OpenAI API Key")
-
-    docs = None
-    topic = None
-    choice = st.selectbox(
-        "Choose what you want to use.",
-        (
-            "File",
-            "Wikipedia Article",
-        ),
-    )
-    if choice == "File":
-        file = st.file_uploader(
-            "Upload a .docx , .txt or .pdf file",
-            type=["pdf", "txt", "docx"],
-        )
-        if file:
-            docs = split_file(file)
-    else:
-        topic = st.text_input("Search Wikipedia...")
-        if topic:
-            docs = wiki_search(topic)
-
-llm = ChatOpenAI(
-    temperature=0.1,
-    model="gpt-3.5-turbo-1106",
-    streaming=True,
-    callbacks=[StreamingStdOutCallbackHandler()],
-    openai_api_key = openai_api_key
-)
 
 if not docs:
     st.markdown(
