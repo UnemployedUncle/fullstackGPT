@@ -87,8 +87,8 @@ with st.sidebar:
 @st.cache_data(show_spinner="Making {level} quiz...")
 def run_quiz_chain(level, _docs, topic):
     # chain = {"context": questions_chain} | formatting_chain | output_parser
-    chain = {"context": format_docs} | questions_prompt | question_llm
-    return chain.invoke(_docs, level)
+    chain = questions_prompt | question_llm
+    return chain.invoke({"level": level, "context": format_docs(_docs)})
 # .additional_kwargs["function_call"]["arguments"]
 
 function = {
