@@ -358,9 +358,8 @@ if not docs:
     )
 else:
     response = run_quiz_chain(level, docs, topic if topic else file.name)
-    # st.write(json.loads(response))
-    st.write(response.type)
-    st.write(response)
+    # st.write(response.type) # AIMessageChunk
+    st.write(response.additional_kwargs["function_call"]["arguments"])
     # response = run_quiz_chain(level, docs, topic if topic else file.name)
     # with st.form("questions_form"):
     #     for question in response["questions"]:
