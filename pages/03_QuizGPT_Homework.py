@@ -10,13 +10,6 @@ from langchain.retrievers import WikipediaRetriever
 from langchain.schema import BaseOutputParser, output_parser
 
 
-# class JsonOutputParser(BaseOutputParser):
-#     def parse(self, text):
-#         text = text.replace("```", "").replace("json", "")
-#         return json.loads(text)
-
-# output_parser = JsonOutputParser()
-
 st.set_page_config(
     page_title="QuizGPT",
     page_icon="❓",
@@ -144,54 +137,8 @@ question_llm = ChatOpenAI(
     ],
 )
 
-# llm = ChatOpenAI(
-#     temperature=0.1,
-#     model="gpt-3.5-turbo-1106",
-#     streaming=True,
-#     callbacks=[StreamingStdOutCallbackHandler()],
-#     openai_api_key = openai_api_key
-# )
-
 def format_docs(docs):
     return "\n\n".join(document.page_content for document in docs)
-
-#%%
-
-# def get_weather(lon, lat):
-#     print("Call an api...")
-
-# schema = {
-#     "name": "get_weather",
-#     "description": "function that takes a longitude and latitude to find the weather of a place",
-#     "parameters": {
-#         "type": "object",
-#         "properties": {
-#             "lon": {"type": "string", "description": "longitude of the place"},
-#             "lat": {"type": "string", "description": "latitude of the place"},
-#         },
-#     }
-#     "required": ["lon", "lat"],
-# }
-
-# llm = ChatOpenAI(
-#     temperature=0.1,
-# ).bind(
-#     function_call={
-#         "name": "create_quiz",
-#     },
-#     functions=[
-#         function,
-#     ],
-# )
-
-# prompt = PromptTemplate.from_template("Make a quiz about {city}")
-# chain = prompt | llm
-# response = chain.invoke({"city": "rome"})
-# response = response.additional_kwargs["function_call"]["arguments"]
-# response
-
-
-#%%
 
 questions_prompt = ChatPromptTemplate.from_messages(
     [
@@ -210,142 +157,6 @@ questions_prompt = ChatPromptTemplate.from_messages(
     ]
 )
 
-# questions_chain = {"context": format_docs, "level": level} | questions_prompt | question_llm
-
-# prompt = PromptTemplate.from_template("Make a quiz about {city}")
-# questions_chain = prompt | llm
-# response = chain.invoke({"city": "rome"})
-# response = response.additional_kwargs["function_call"]["arguments"]
-# response
-
-# formatting_prompt = ChatPromptTemplate.from_messages(
-#     [
-#         (
-#             "system",
-#             """
-#     You are a powerful formatting algorithm.
-     
-#     You format exam questions into JSON format.
-#     Answers with (o) are the correct ones.
-     
-#     Example Input:
-
-#     Question: What is the color of the ocean?
-#     Answers: Red|Yellow|Green|Blue(o)
-         
-#     Question: What is the capital or Georgia?
-#     Answers: Baku|Tbilisi(o)|Manila|Beirut
-         
-#     Question: When was Avatar released?
-#     Answers: 2007|2001|2009(o)|1998
-         
-#     Question: Who was Julius Caesar?
-#     Answers: A Roman Emperor(o)|Painter|Actor|Model
-    
-     
-#     Example Output:
-     
-#     ```json
-#     {{ "questions": [
-#             {{
-#                 "question": "What is the color of the ocean?",
-#                 "answers": [
-#                         {{
-#                             "answer": "Red",
-#                             "correct": false
-#                         }},
-#                         {{
-#                             "answer": "Yellow",
-#                             "correct": false
-#                         }},
-#                         {{
-#                             "answer": "Green",
-#                             "correct": false
-#                         }},
-#                         {{
-#                             "answer": "Blue",
-#                             "correct": true
-#                         }}
-#                 ]
-#             }},
-#                         {{
-#                 "question": "What is the capital or Georgia?",
-#                 "answers": [
-#                         {{
-#                             "answer": "Baku",
-#                             "correct": false
-#                         }},
-#                         {{
-#                             "answer": "Tbilisi",
-#                             "correct": true
-#                         }},
-#                         {{
-#                             "answer": "Manila",
-#                             "correct": false
-#                         }},
-#                         {{
-#                             "answer": "Beirut",
-#                             "correct": false
-#                         }}
-#                 ]
-#             }},
-#                         {{
-#                 "question": "When was Avatar released?",
-#                 "answers": [
-#                         {{
-#                             "answer": "2007",
-#                             "correct": false
-#                         }},
-#                         {{
-#                             "answer": "2001",
-#                             "correct": false
-#                         }},
-#                         {{
-#                             "answer": "2009",
-#                             "correct": true
-#                         }},
-#                         {{
-#                             "answer": "1998",
-#                             "correct": false
-#                         }}
-#                 ]
-#             }},
-#             {{
-#                 "question": "Who was Julius Caesar?",
-#                 "answers": [
-#                         {{
-#                             "answer": "A Roman Emperor",
-#                             "correct": true
-#                         }},
-#                         {{
-#                             "answer": "Painter",
-#                             "correct": false
-#                         }},
-#                         {{
-#                             "answer": "Actor",
-#                             "correct": false
-#                         }},
-#                         {{
-#                             "answer": "Model",
-#                             "correct": false
-#                         }}
-#                 ]
-#             }}
-#         ]
-#      }}
-#     ```
-#     Your turn!
-
-#     Questions: {context}
-
-# """,
-#         )
-#     ]
-# )
-
-# formatting_chain = formatting_prompt | llm
-
-
 if not docs:
     st.markdown(
         """
@@ -360,9 +171,10 @@ else:
     response = run_quiz_chain(level, docs, topic if topic else file.name)
     st.write(response.additional_kwargs) # AIMessageChunk
     # st.write(response.additional_kwargs["function_call"]["arguments"])
+    response = json.laod(response.additional_kwargs["function_call"]["arguments"])
     # response = run_quiz_chain(level, docs, topic if topic else file.name)
     with st.form("questions_form"):
-        for question in response.additional_kwargs["function_call"]["arguments"]["questions"]:
+        for question in response["questions"]:
             st.write(question["question"])
             value = st.radio(
                 "Select an option.",
