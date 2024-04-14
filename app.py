@@ -35,6 +35,11 @@ import streamlit as st
 #     page_icon="🤖",
 # )
 
+st.set_page_config(
+    page_title="FullstackGPT Home",
+    page_icon="🤖",
+)
+
 st.markdown(
     """
 # Hello!
@@ -42,12 +47,7 @@ st.markdown(
 Welcome to my FullstackGPT Portfolio!
             
 Here are the apps I made:
-            
-- [x] [DocumentGPT](/DocumentGPT)
-- [ ] [PrivateGPT](/PrivateGPT)
-- [x] [QuizGPT](/QuizGPT)
-- [ ] [SiteGPT](/SiteGPT)
-- [ ] [MeetingGPT](/MeetingGPT)
-- [ ] [InvestorGPT](/InvestorGPT)
+
+- [x] [🤖 WebAssistant](/WebAssistant)
 """
 )
