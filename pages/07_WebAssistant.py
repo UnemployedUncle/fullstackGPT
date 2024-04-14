@@ -3,6 +3,13 @@ import streamlit as st
 import openai as client
 import os
 
+from langchain.tools import WikipediaQueryRun
+from langchain_community.utilities import WikipediaAPIWrapper
+
+from langchain.utilities.duckduckgo_search import DuckDuckGoSearchAPIWrapper
+import json
+import requests
+from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -18,14 +25,6 @@ with st.sidebar:
     openai_api_key = st.text_input("OpenAI API Key")
     os.environ["OPENAI_API_KEY"] = openai_api_key
     # assistant_id = st.text_input("assistant_id")
-
-#%%
-from langchain.tools import WikipediaQueryRun
-from langchain_community.utilities import WikipediaAPIWrapper
-from langchain.utilities.duckduckgo_search import DuckDuckGoSearchAPIWrapper
-import json
-import requests
-from bs4 import BeautifulSoup
 
 # Given the query(search term) find it on Wikipedia
 def wiki_search(inputs):
