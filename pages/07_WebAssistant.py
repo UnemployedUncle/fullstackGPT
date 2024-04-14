@@ -13,7 +13,6 @@ from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 load_dotenv()
 
-
 st.set_page_config(
     page_title="WebAssistant",
     page_icon="🤖",
